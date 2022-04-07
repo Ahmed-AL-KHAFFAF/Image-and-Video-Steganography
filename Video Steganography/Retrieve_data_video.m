@@ -1,59 +1,38 @@
-function[status] = Retrieve_data_video(vidfile,key)
-    status=0;
-    vidObj = VideoReader(vidfile);
-    frameCnt = vidObj.NumberOfFrames;
-    vidObj = VideoReader(vidfile);
-    
-    f1 = fopen(key,'r');
-        f = fread(f1);
-        s = char(f');
-        fclose(f1);
-        
-    filesize=bin2dec(s);
-    framesize=(vidObj.width * vidObj.height);
-    vidObj.height
-    j=1;
-    R=zeros(1,filesize);
-    s=1;
-    while j<=filesize/framesize
-         target = readFrame(vidObj);
-         i=1;j=1;k=1;
-         while k<=framesize
-            r1=target(i,j,1);
-            r2=target(i,j,2);
-            r3=target(i,j,3);
-            R(s)=findtext(r1,r2,r3);
-            if(i<vidObj.height)
-                         i=i+1;
-            else
-                        i=1;
-                        j=j+1;
-            end
-            k=k+1;
-            s=s+1;
-         end 
-    end
-    if(mod(filesize,framesize)~=0)
-        target = readFrame(vidObj);
-         i=1;j=1;k=1;
-         while k<=mod(filesize,framesize)
-            r1=target(i,j,1);
-            r2=target(i,j,2);
-            r3=target(i,j,3);
-            R(s)=findtext(r1,r2,r3);
-            if(i<vidObj.height)
-                         i=i+1;
-            else
-                        i=1;
-                        j=j+1;
-            end
-            k=k+1;
-            s=s+1;
-         end 
-    end
+import LSB as lsb
+import AES as Cipher
+import os
 
-    fid = fopen('x.txt','wb');
-    fwrite(fid,char(R),'char');
-    fclose(fid);
-    status=1;
-end
+
+def main():
+    select = input("Enter E for Encoding D for Decoding :")
+    if select == 'E':
+        if os.path.exists("out.txt"):
+            os.remove("out.txt")
+        if os.path.exists("pls.txt.enc"):
+            os.remove("pls.txt.enc")
+        if os.path.exists("pls.txt"):
+            os.remove("pls.txt")
+        if os.path.exists("images/out1.png"):
+            os.remove("images/out1.png")
+
+        if os.path.exists("images/in1.png"):
+            secretMessage = input("Enter the secret message :")
+            passwordText = input("Password :")
+            encodedMessage = Cipher.encrypt(secretMessage, passwordText)
+            print(encodedMessage)
+            lsb.LsbEncoding(encodedMessage)
+            if os.path.exists("pls.txt"):
+                os.remove("pls.txt")
+        else : print("Image is not Present")
+
+
+
+    if select == 'D':
+        if os.path.exists("pls.txt.enc"):
+            decodedText = lsb.LsbDecoding()
+            print(decodedText)
+            password = input("Enter the password :")
+            finalMessage = Cipher.decrypt(decodedText, password)
+            print("Final message :", finalMessage)
+        else :
+            print("PLS file is not present !")
